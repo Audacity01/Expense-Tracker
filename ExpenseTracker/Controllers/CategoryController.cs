@@ -19,123 +19,35 @@ public class CategoryController : Controller
         _context = context;
     }
 
-    // GET: Category
     public async Task<IActionResult> Index()
     {
         return View(await _context.Categories.ToListAsync());
     }
 
-    // GET: Category/Details/5
-    public async Task<IActionResult> Details(Guid? id)
+    public IActionResult AddOrEdit(Guid id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var category = await _context.Categories
-            .FirstOrDefaultAsync(m => m.CategoryId == id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        return View(category);
+        if (id == Guid.Empty)
+            return View(new Category());
+        else
+            return View(_context.Categories.Find(id));
     }
 
-    // GET: Category/Create
-    public IActionResult Create()
-    {
-        return View();
-    }
-
-    // POST: Category/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("CategoryId,Title,Type,Icon")] Category category)
+    public async Task<IActionResult> AddOrEdit([Bind("CategoryId,Title,Icon,Type")] Category category)
     {
         if (ModelState.IsValid)
         {
-            category.CategoryId = Guid.NewGuid();
-            _context.Add(category);
+            if (category.CategoryId == Guid.Empty)
+                _context.Add(category);
+            else
+                _context.Update(category);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
         return View(category);
     }
 
-    // GET: Category/Edit/5
-    public async Task<IActionResult> Edit(Guid? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var category = await _context.Categories.FindAsync(id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-        return View(category);
-    }
-
-    // POST: Category/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("CategoryId,Title,Type,Icon")] Category category)
-    {
-        if (id != category.CategoryId)
-        {
-            return NotFound();
-        }
-
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                _context.Update(category);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CategoryExists(category.CategoryId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(category);
-    }
-
-    // GET: Category/Delete/5
-    public async Task<IActionResult> Delete(Guid? id)
-    {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var category = await _context.Categories
-            .FirstOrDefaultAsync(m => m.CategoryId == id);
-        if (category == null)
-        {
-            return NotFound();
-        }
-
-        return View(category);
-    }
-
-    // POST: Category/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(Guid id)
@@ -150,8 +62,5 @@ public class CategoryController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    private bool CategoryExists(Guid id)
-    {
-        return _context.Categories.Any(e => e.CategoryId == id);
-    }
+
 }

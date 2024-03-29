@@ -7,6 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ETrackerDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("BlogDbConStrInAzure")));
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NBaF5cXmZCekxyWmFZfVpgd19GaVZQTWY/P1ZhSXxXdkZhUX5bcH1UT2daVUA=");
 
 var app = builder.Build();
 
